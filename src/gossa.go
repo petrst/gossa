@@ -35,6 +35,7 @@ type rowTemplate struct {
 	Name string
 	Href template.HTML
 	Size string
+    ModTime string
 	Ext  string
 }
 
@@ -79,6 +80,8 @@ func humanize(bytes int64) string {
 	}
 }
 
+
+
 func replyList(w http.ResponseWriter, fullPath string, path string) {
 	_files, err := ioutil.ReadDir(fullPath)
 	check(err)
@@ -91,7 +94,7 @@ func replyList(w http.ResponseWriter, fullPath string, path string) {
 	title := "/" + strings.TrimPrefix(path, *extraPath)
 	p := pageTemplate{}
 	if path != *extraPath {
-		p.RowsFolders = append(p.RowsFolders, rowTemplate{"../", "../", "", "folder"})
+		p.RowsFolders = append(p.RowsFolders, rowTemplate{"../", "../", "", "", "folder"})
 	}
 	p.ExtraPath = template.HTML(html.EscapeString(*extraPath))
 	p.Ro = *ro
@@ -107,11 +110,16 @@ func replyList(w http.ResponseWriter, fullPath string, path string) {
 			href = strings.Replace(href, "/", "", 1)
 		}
 		if el.IsDir() {
-			p.RowsFolders = append(p.RowsFolders, rowTemplate{el.Name() + "/", template.HTML(href), "", "folder"})
+			p.RowsFolders = append(p.RowsFolders, rowTemplate{el.Name() + "/", template.HTML(href), "", "", "folder"})
 		} else {
 			sl := strings.Split(el.Name(), ".")
 			ext := strings.ToLower(sl[len(sl)-1])
-			p.RowsFiles = append(p.RowsFiles, rowTemplate{el.Name(), template.HTML(href), humanize(el.Size()), ext})
+			p.RowsFiles = append(p.RowsFiles, rowTemplate{
+                    el.Name(),
+                    template.HTML(href),
+                    humanize(el.Size()),
+                    el.ModTime().Format("2006-01-02 15:04:05"),
+                    ext})
 		}
 	}
 
