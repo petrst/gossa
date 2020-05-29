@@ -1,8 +1,10 @@
 build:
 	cp src/gossa.go gossa.go
 	make -C gossa-ui/
-	go vet && go fmt
-	CGO_ENABLED=0 go build gossa.go
+	go vet
+	go fmt
+	CGO_ENABLED=0 
+	go build gossa.go
 	rm gossa.go
 
 run:
