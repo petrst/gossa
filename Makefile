@@ -35,6 +35,16 @@ watch-ro:
 watch-test:
 	ls src/* gossa-ui/* | entr -rc make test
 
+build-rpi:
+	cp src/gossa.go gossa.go
+	make -C gossa-ui/
+	export CGO_ENABLED=0 
+	export GOOS=linux 
+	export GOARCH=arm 
+	@echo Building for $$GOOS-$$GOARCH
+	go build gossa.go
+	mv gossa gossa-linux-arm
+
 build-all:
 	cp src/gossa.go gossa.go
 	make -C gossa-ui/
